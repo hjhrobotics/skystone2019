@@ -1,0 +1,108 @@
+/* Copyright (c) 2017 FIRST. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted (subject to the limitations in the disclaimer below) provided that
+ * the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list
+ * of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice, this
+ * list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ *
+ * Neither the name of FIRST nor the names of its contributors may be used to endorse or
+ * promote products derived from this software without specific prior written permission.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+ * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+
+@Autonomous(name="20_Auto:_Detect", group="Linear Opmode")
+//@Disabled
+public class Auto_Red_DetectBlock extends LinearOpMode {
+
+    // Declare OpMode members.
+    private ElapsedTime runtime = new ElapsedTime();
+
+    MechRobot robot = new MechRobot();
+    int autoCase = 1;
+    String stoneType = "";
+    int stonePosition = 0;
+
+
+    @Override
+    public void runOpMode() {
+
+        robot.init(hardwareMap);
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        waitForStart();
+        runtime.reset();
+
+        // run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
+
+            // Setup a variable for each drive wheel to save power level for telemetry
+
+
+            switch(autoCase) {
+                case 1:
+                    robot.drive(-.4, -.4);
+                    if(runtime.seconds() > 1.8) {
+                       autoCase = 2;
+                    }
+                    break;
+                case 2:
+                    robot.drive(0, 0);
+                    if(runtime.seconds() > 3.2) {
+                        autoCase = 3;
+                    }
+                    break;
+                case 3:
+                    if(robot.getRed() > 210 && robot.getRed() < 400) {
+                        stonePosition = 2;
+                        stoneType = "Stone";
+                        autoCase = 10;
+                    } else {
+                        stonePosition = 1;
+                        stoneType = "Skystone";
+                        autoCase = 20;
+                    }
+                    break;
+                default:
+                    robot.drive(0, 0);
+                    break;
+            }
+
+
+
+
+
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Red: ", robot.getRed());
+            telemetry.addData("Stone Type: ", stoneType);
+            telemetry.addData("Stone Position: ", stonePosition);
+            telemetry.update();
+        }
+    }
+}
